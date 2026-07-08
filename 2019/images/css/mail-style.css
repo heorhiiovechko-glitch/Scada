@@ -1,0 +1,282 @@
+@charset "utf-8";
+/* CSS Document */
+
+@import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic);
+
+html * {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	font-family: "PT Sans";
+}
+
+a {
+	text-decoration: none;
+	color: #FFF;
+}
+
+img {
+	border: 0;
+}
+
+.clear {
+	clear: both;
+}
+
+#wrapper {
+	margin: auto;
+	width: 100%;
+	height: auto;
+	min-height:930px;
+}
+
+#wrapper .header {
+	margin: auto;
+	width: 100%;
+	height: 145px;
+	background: #184703;
+}
+
+.header .header-container {
+	margin: auto;
+	width: 1200px;
+	height: 140px;
+}
+
+.header-container .login-area {
+	margin-top: 15px;
+	float: right;
+	width: 200px;
+	height: 30px;
+	font-family: "PT Sans";
+	font-size: 14px;
+	color: #fff;
+}
+
+.login-area img {
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.logo {
+	margin-top: 75px;
+	float: left;
+}
+
+#navigation {
+	margin-top: 115px;
+	margin-right: -175px;
+	float: right;
+	width: 500px;
+	height: 60px;
+}
+
+#navigation ul {
+	list-style: none;
+}
+
+#navigation ul li {
+	padding: 0px 35px;
+	float: left;
+}
+
+#navigation ul li a {
+	font-family: "PT Sans";
+	font-size: 14px;
+}
+
+.active-menu {
+	padding: 10px;
+	color: #000;
+	background: #FFF;
+	-webkit-border-top-left-radius: 15px;
+	-webkit-border-top-right-radius: 15px;
+	-moz-border-radius-topleft: 15px;
+	-moz-border-radius-topright: 15px;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+#content-area {
+	margin: auto;
+	width: 1200px;
+	height: auto;
+}
+
+#content-area .left-column {
+	float: left;
+	width: 1150px;
+	min-height: 700px;
+}
+
+.left-column .temp-banner {
+	margin: auto;
+	width: 1125px;
+	height: 389px;
+	border: 1px solid #CCC;
+}
+
+.left-column .three-column {
+	margin: auto;
+	margin-top: 15px;
+	width: 897px;
+	height: auto;
+}
+
+.three-column .column1 {
+	float: left;
+	margin-left: 25px;
+	width: 250px;
+	height: 200px;
+}
+
+.three-column .column2 {
+	float: left;
+	margin-left: 25px;
+	width: 250px;
+	height: 200px;
+}
+
+.three-column .column3 {
+	float: left;
+	margin-left: 5px;
+	width: 250px;
+	height: 200px;
+}
+
+.three-column .center-img {
+	margin: auto;
+	position: relative;
+	top: 10px;
+	margin-bottom: 20px;
+	margin-top: 10px;
+	width: 360px;
+	height: 198px;
+	clear: both;
+}
+
+.vertical-menu {
+	float: left;
+	top:140px;
+	padding:0;
+	margin-top: 10px;
+	position: absolute;
+	right: 0px;
+	width: 225px;
+	min-height: 700px;
+	border: 1px solid #CCC;
+	background: #f6f6f6;
+	overflow:auto;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+}
+
+.vertical-menu .menu-top {
+	width: 225px;
+	height: 50px;
+	color: #FFF;
+	font-family: "PT Sans";
+	font-size: 20px;
+	text-align: center;
+	line-height: 50px;
+	background: #184703;
+	-webkit-border-top-left-radius: 15px;
+	-webkit-border-top-right-radius: 15px;
+	-moz-border-radius-topleft: 15px;
+	-moz-border-radius-topright: 15px;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+.vertical-menu .pagination {
+	margin: auto;
+	margin-top: 10px;
+	width: 215px;
+	height: 25px;
+}
+
+.vertical-menu .menu-heading {
+	margin-top: 10px;
+	width: 225px;
+	height: 30px;
+	background: #184703;
+	color: #FFF;
+	line-height: 30px;
+	font-family: "PT Sans";
+	font-size: 18px;
+	text-align: center;
+}
+
+.vertical-menu ul {
+	margin-left: 25px;
+	list-style-image: url(../images/icon_bulltet.png);
+}
+
+.vertical-menu ul li {
+	padding: 10px 5px;
+	border-bottom: 1px solid #CCC;
+}
+
+.vertical-menu ul li:last-child {
+	border: none;
+}
+
+.vertical-menu ul li a {
+	color: #666;
+	font-family: "PT Sans";
+	font-size: 14px;
+}
+
+.pagination .prev {
+	width: 70px;
+	height: 25px;
+	float: left;
+	cursor: pointer;
+}
+
+.pagination .next {
+	width: 70px;
+	height: 25px;
+	float: right;
+	cursor: pointer;
+}
+
+.text-fields {
+	margin-top: 10px;
+	margin-left: 10px;
+	width: 200px;
+	height: 25px;
+	font-family: "PT Sans";
+	font-size: 13px;
+	font-weight: normal;
+	color: #666;
+	text-align: left;
+	text-indent:5px;
+	background: #FFF;
+	border: 1px solid #a7a7a7;
+	-webkit-box-shadow: inset 1px 1px 1px 0px #dddddd;
+	-moz-box-shadow: inset 1px 1px 1px 0px #dddddd;
+	box-shadow: inset 1px 1px 1px 0px #dddddd;
+}
+
+#footer {
+	float:bottom;
+	margin: auto;
+	margin-top: 110px;
+	width: 100%;
+	height: 50px;
+	background: #184703;
+}
+
+#footer .copy-right {
+	float: left;
+	margin-left: 15px;
+	line-height: 50px;
+	color: #FFF;
+	font-family: "PT Sans";
+	font-size: 14px;
+	text-align: left;
+}

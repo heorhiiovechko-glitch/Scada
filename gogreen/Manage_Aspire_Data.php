@@ -1,0 +1,478 @@
+<?php
+	
+	####################################
+	#	// For Text fields
+	#	$Form_Fields[]= array($Element_Type,$Field_Type,$Field_Heading,$Field_Name,$Field_Value,$Manditary,$JValid,$Extra,$Class_Name,$Calender,$Editor);
+	#	// Example Data
+	#	$Form_Fields[]= array(1,1,Username,User_Name,'',*,E|N,'Style="color:red;"','Txt_box','Cal','E');
+	
+	
+	#	// For Select Event
+	#	$Form_Fields[]= array($Element_Type,$Field_Type,$Field_Heading,$Field_Name,$Field_Value,$Manditary,$JValid,$Class_Name,$Extra,$Combo_Title,$Match);
+	#	// For Select Example
+	#	$Form_Fields[] = array('2','2','Category','cat_id',$Status_Array,'*','1','selectcls','Style="color:red;"','-----Category-----','');
+	
+	#	$Element_Type 1 => 'text','password','radio',checkbox','submit','button','hidden','file','textarea'
+	#	$Element_Type 2 => Dropdown - Select
+	
+	#	$Field_Type 1 => 'text',
+	#	$Field_Type 2 => 'password',
+	#	$Field_Type 3 => 'radio',
+	#	$Field_Type 4 => 'checkbox',
+	#	$Field_Type 5 => 'submit',
+	#	$Field_Type 6 => 'button',
+	#	$Field_Type 7 => 'hidden',
+	#	$Field_Type 8 => 'file'
+	
+	#	$Manditary = '*' or ''
+	#	$JValid = 'E|N' or 'E' or 'N'
+	#	$Empty = leave it as empty fileds
+	#	$Extra = anything you can add for that field ex : style='color:#33333' or onlick = jfunc()
+	#	$Calender = 'Cal' or 'Cal_T' [Cal - Calender without time  ---  Cal_T - Calender with time ]
+	#	$Editor = 'E' or '' [ Html text Editor  ]
+	#	$Combo_Title = Dropdown Title
+	#	$Match = which value we want to match and will selected too.
+
+	# 	$Photo_Fields[] = array($Photo_Field_Name,$Target_Folder_Path,$Thumb_Img_Folder_Path,$Img_Width,$Img_Height,$Img_Name_Unique_Id,$Content_Type);
+	#	$Photo_Fields[$Photo_Field_Name] = array("pho","big","thumb",100,'','Yes','I|F');
+	
+	#	$Img_Name_Unique_Id = 'Yes' or ''
+	#	$Content_Type = I or F
+	#	Yes - It will take last insert record id from table and store with that name Ex : 123_Field_Name.jpg [Actual image name winter.jpg]
+	#	I - Image file
+	#	F - File Content
+
+	#
+	################################################
+
+	include("Header.php");
+	$Title_Head = str_replace('.php','',basename($_SERVER['SCRIPT_NAME']));
+	$Submit_Txt = $Title_Head."_Submit";
+	$List_Page = str_replace('Add','List',$Title_Head);
+	
+	if(empty($_COOKIE[$Cook_Name])){
+		header("Location: index.php");
+		exit;
+	}
+		# Getting IMEI
+		$Mysql_Query = "select Device_Name,IMEI from device_register where db_name='va_aspire' order by IMEI";
+		$Mysql_Query_Result = mysqli_query($db,$Mysql_Query) or die(mysqli_connect_error());
+		$Mysql_Record_Count = mysqli_num_rows($Mysql_Query_Result);
+		if($Mysql_Record_Count>=1){
+			while($Fetch_Result = mysqli_fetch_array($Mysql_Query_Result)){
+				$ALLIMEI_Array[$Fetch_Result['IMEI']] = $Fetch_Result['IMEI'];
+				$ALLDevice_Array[$Fetch_Result['IMEI']] = $Fetch_Result['Device_Name'];
+			}
+		}
+	
+	############################################
+	#
+	# variable Declaration
+	#
+	############################################
+
+
+	$Duplicate_Column = "";
+	
+	//Text boxes
+	$Form_Fields[] = array('2','2','IMEI','IMEI',$ALLIMEI_Array,'*','1','selectcls','','----- Select Device-----','');
+	
+	
+	
+	$Form_Fields[] = array('1','1','Date','Date','','*','E|N|0','','txtbox','Cal','');
+	//$Form_Fields[] = array('1','7','IMEI','IMEI','$ALLIMEI_Array','*','1','selectcls','','----- Select IMEI-----','');
+	
+		//Submit Button
+	$Form_Fields[] = array('1','5','',$Submit_Txt,'Get Raw Data','','','','submit_but','');
+
+	// Join query - 
+	$Query_To_Mysql_Join = "";
+	
+	
+	###############################################     End      #########################################
+
+	
+	// Javascript Validation	
+	foreach($Form_Fields as $Forms){
+		if($Forms[5] == '*'){
+			$Jvalid_Arr[$Forms[3]].=$Forms[3].",";
+			$Jvalid_Type_Arr[$Forms[6]].=$Forms[6].",";
+		}
+		// Editor Enabled
+		if($Forms[10] == 'E'){
+			$Editor = 'Yes';
+		}
+			
+	}
+	// For Javascript Validation Parsing
+	$Jvalid_Arr_Join = substr(join('',$Jvalid_Arr),0,-1);
+	$Jvalid_Type_Arr_Join = substr(join('',$Jvalid_Type_Arr),0,-1);
+	
+	// Call Editor Enable Function
+	if($Editor == 'Yes'){
+		HTML_Editor();
+	}
+
+	// After submit
+	$Submit_Pos =count($Form_Fields) - 1;
+	if(isset($_REQUEST[$Form_Fields[$Submit_Pos][3]])){
+		$v =  0;
+		$Record_Count == 0;
+		foreach($Form_Fields as $Forms){
+			
+			// Make a Query Fields and Values
+			if($Forms[1] != 5 && $Forms[1] != 6 && $Forms[1] != 8){
+				$Forms_Field_Val[$Forms[3]] = $_REQUEST[$Forms[3]];
+				$Query_Left.= $Forms[3].",";
+				if($Forms[3] == 'IMEI'){
+					$IMEI=$_REQUEST[$Forms[3]];
+				}
+				if($Forms[9] == 'Cal_T'){
+					$_REQUEST[$Forms[3]] =  date("Y-m-d H:i",strtotime($_REQUEST[$Forms[3]]));
+					$Date=$_REQUEST[$Forms[3]];
+				}
+				if($Forms[9] == 'Cal'){
+					$_REQUEST[$Forms[3]] =  date("Y-m-d",strtotime($_REQUEST[$Forms[3]]));
+					$Date=$_REQUEST[$Forms[3]];
+				}
+				$Query_Right.= "'".$_REQUEST[$Forms[3]]."'".",";
+			}	
+			$v++;	
+		}
+		
+			
+
+		if(isset($_REQUEST[$Forms[3]])){
+			$Device_Query="select Format_Type,db_name,IMEI from device_register where IMEI='$IMEI'";
+			$Resultset=mysqli_query($db,$Device_Query);
+			$Row_Num=mysqli_num_rows($Resultset);
+			if($Row_Num>=1){
+			while($Fetch_Result = mysqli_fetch_array($Resultset)){
+			$Format_Type=$Fetch_Result['Format_Type'];
+			$db_name=$Fetch_Result['db_name'];
+			}
+			}//echo $Format_Type." ".$Device_Query;
+				if($Format_Type == 1){
+					$Table_Name = "device_data"; 
+			
+				$Date = date("Y-m-d", strtotime($Date));
+$Query_Date="Date_S='$Date'";														
+				}elseif($Format_Type == 2){
+					$Table_Name ="device_data_f2";
+
+					$Date = date("Y-m-d", strtotime($Date));					$Query_Date="Date_S='$Date'";														
+				}elseif($Format_Type == 3){
+					$Table_Name = "device_data_f3";
+					$Date = date("Y-m-d", strtotime($Date));			
+					$Query_Date="Date_S='$Date'";										
+				}elseif($Format_Type == 4){
+					$Table_Name = "device_data_f4"; 
+					$Date = date("Y-m-d", strtotime($Date));
+					$Query_Date="Date_S='$Date'";					
+				}elseif($Format_Type == 6){
+					$Table_Name = "device_data_f6"; 
+					$Date = date("Y-m-d", strtotime($Date));
+					$Query_Date="Date_S='$Date'";					
+				}elseif($Format_Type == 7){
+					$Table_Name = "device_data_f7";
+					$Query_Date="Date_S='$Date'";	 
+				}elseif($Format_Type == 8){
+					$Table_Name = "device_data_f8";
+					$Query_Date="Date_S='$Date'";	 
+				}elseif($Format_Type == 10){
+					$Table_Name = "device_data_f10"; 
+					$Query_Date="Date_S='$Date'";	
+				}
+?>
+
+
+<?php
+
+if($Format_Type == 6 ){
+		$Query="select Date_S,max(Nacel_Temp) as Nacel_Max,min(Nacel_Temp) as Nacel_Min,max(Gear_Temp) as Gear_Max,min(Gear_Temp) as Gear_Min,max(Gen1_Temp) as Gen1_Max,min(Gen1_Temp) as Gen1_Min,max(Control_Temp) as Control_Max,min(Control_Temp) as Control_Min,max(Trip_Line_Ok) as Trip_Line_Ok_Max,min(Trip_Line_Ok) as Trip_Line_Ok_Min,max(Trip_Turbine_Ok) as Trip_Turbine_Ok_Max,min(Trip_Turbine_Ok) as Trip_Turbine_Ok_Min,max(Trip_Run) as Trip_Run_Max,min(Trip_Run) as Trip_Run_Min,max(Trip_Gen1) as Trip_Gen1_Max,min(Trip_Gen1) as Trip_Gen1_Min,IMEI from $db_name.$Table_Name WHERE IMEI='$IMEI' and $Query_Date limit 1 ";
+}
+if($Format_Type == 4){
+		$Query="select Date_S,max(Twist_Pulse) as Energy_Max,min(Twist_Pulse) as Energy_Min,IMEI from $db_name.device_data_f4 WHERE IMEI='$IMEI' and   $Query_Date limit 1 ";
+}
+
+
+		//echo 	$Query;
+		$Resultset=mysqli_query($db,$Query);
+		$Row_Num=mysqli_num_rows($Resultset);//echo  $Raw_Row_Num;
+			if($Row_Num>=1){
+
+
+ ?>
+<table border="0" cellpadding="4" cellspacing="1">
+<?php
+if($Format_Type == 6 ){
+?>
+                    <tr>
+			<td class="headings" width="80px" align="left">Date</td>
+                        <td class="headings" width="80px" align="left">HW Pneu Max</td>
+                        <td class="headings" width="80px" align="left">HW Pneu Min</td>
+                        <td class="headings" width="90px" align="left">KOD Pneu Max</td>
+                        <td class="headings" width="90px" align="left">KOD Pneu Min</td>
+                        <td class="headings" width="80px" align="left">Deg1 Pneu Max</td>
+                        <td class="headings" width="80px" align="left">Deg1 Pneu Min</td>
+			<td class="headings" width="80px" align="left">Deg2 Pneu Max</td>
+                        <td class="headings" width="80px" align="left">Deg2 Pneu Min</td>
+			<td class="headings" width="80px" align="left">HW Count Max</td>
+                        <td class="headings" width="80px" align="left">HW Count Min</td>
+                        <td class="headings" width="90px" align="left">KOD Count Max</td>
+                        <td class="headings" width="90px" align="left">KOD Count Min</td>
+                        <td class="headings" width="80px" align="left">Deg1 Count Max</td>
+                        <td class="headings" width="80px" align="left">Deg1 Count Min</td>
+			<td class="headings" width="80px" align="left">Deg2 Count Max</td>
+                        <td class="headings" width="80px" align="left">Deg2 Count Min</td>
+</tr>
+<?php
+} if($Format_Type == 4 ){
+ ?>
+
+                    <tr>
+			<td class="headings" width="80px" align="left">Date</td>
+                        <td class="headings" width="80px" align="left">Energy Max</td>
+                        <td class="headings" width="80px" align="left">Energy Min</td>
+                        </tr>
+<?php
+} 
+while($Result = mysqli_fetch_array($Resultset)){
+	if($Format_Type == 6 ){
+			?>
+			<tr><td class='Row_Td' align="center"><?=$Result['Date_S']?></td><td class='Row_Td' align="center"><?=$Result['Nacel_Max']?></td><td class='Row_Td' align="center"><?=$Result['Nacel_Min']?></td><td class='Row_Td' align="center"><?=$Result['Gear_Max']?></td><td class='Row_Td' align="center"><?=$Result['Gear_Min']?></td><td class='Row_Td' align="center"><?=$Result['Gen1_Max']?></td><td class='Row_Td' align="center"><?=$Result['Gen1_Min']?></td>
+<td class='Row_Td' align="center"><?=$Result['Control_Max']?></td><td class='Row_Td' align="center"><?=$Result['Control_Min']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Line_Ok_Max']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Line_Ok_Min']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Turbine_Ok_Max']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Turbine_Ok_Min']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Run_Max']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Run_Min']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Gen1_Max']?></td><td class='Row_Td' align="center"><?=$Result['Trip_Gen1_Min']?></td>
+</tr>
+			<?php
+} if($Format_Type == 4 ){
+?>
+<tr><td class='Row_Td' align="center"><?=$Result['Date_S']?></td><td class='Row_Td' align="center"><?=$Result['Energy_Max']?></td><td class='Row_Td' align="center"><?=$Result['Energy_Min']?></td>
+</tr>
+<?php
+}			
+ 
+}
+}
+?>
+</table>
+<?php
+
+if($Format_Type == 6 ){
+		$Mysql_Query="select Record_Index,Date_S,Time_S,GRPM,RRPM,Windspeed,Pitch,Status_Old,Date,Time,Power,Trip_Line_Ok,Trip_Turbine_Ok,Trip_Run,Trip_Gen1,Nacel_Temp,Gear_Temp,Gen1_Temp,Control_Temp,IMEI from $db_name.$Table_Name WHERE IMEI='$IMEI' and   $Query_Date  ";
+}
+if($Format_Type == 4){
+		$Mysql_Query="select Record_Index,Date_S,Time_S,GRPM,RRPM,Windspeed,Power,Nacel_Temp,Gen1_Temp,Gen2_Temp,Gen_Bear1_Temp,YPhase_Volt,BPhase_Volt,RPhase_Current,YPhase_Current,Twist_Pulse,IMEI from $db_name.device_data_f4 WHERE IMEI='$IMEI' and   $Query_Date  ";
+}
+	//echo 	$Mysql_Query;
+		$Raw_Resultset=mysqli_query($db,$Mysql_Query);
+		$Raw_Row_Num=mysqli_num_rows($Raw_Resultset);//echo  $Raw_Row_Num;
+			if($Raw_Row_Num>=1){
+
+ ?>
+<table border="1" cellpadding="4" cellspacing="1">
+<?php
+if($Format_Type == 6 ){
+?>
+                    <tr>
+                        <td class="headings" width="80px" align="left"></td>
+                        <td class="headings" width="80px" align="left">Date_S</td>
+                        <td class="headings" width="90px" align="left">Time_S</td>
+                        <td class="headings" width="90px" align="left">HW In</td>
+                        <td class="headings" width="80px" align="left">HW Out</td>
+                        <td class="headings" width="80px" align="left">KOD In</td>
+                        <td class="headings" width="90px" align="left">KOD Out</td>
+                        <td class="headings" width="90px" align="left">Deg1 In<</td>
+                       <td class="headings" width="80px" align="left">Deg1 Out</td>
+                        <td class="headings" width="80px" align="left">Deg2 In</td>
+                        <td class="headings" width="90px" align="left">Deg2 Out</td>
+                        <td class="headings" width="90px" align="left">HW Tot</td>
+                        <td class="headings" width="90px" align="left">KOD Tot</td>
+			 <td class="headings" width="90px" align="left">Deg1 Tot</td>
+			 <td class="headings" width="90px" align="left">Deg2 Tot</td>
+			  <td class="headings" width="90px" align="left">HW Pneu</td>
+                        <td class="headings" width="90px" align="left">KOD Pneu</td>
+			 <td class="headings" width="90px" align="left">Deg1 Pneu</td>
+			 <td class="headings" width="90px" align="left">Deg2 Pneu</td>
+                    
+                    </tr>
+                    <?php
+} if($Format_Type == 4 ){
+       ?>
+
+                    <tr>
+                        <td class="headings" width="80px" align="left"></td>
+                        <td class="headings" width="80px" align="left">Date_S</td>
+			<td class="headings" width="80px" align="left">Time_S</td>
+                        <td class="headings" width="90px" align="left">HP Out</td>
+                        <td class="headings" width="80px" align="left">HP In</td>
+                        <td class="headings" width="80px" align="left">P1 In</td>
+                        <td class="headings" width="90px" align="left">P1 Out</td>
+                        <td class="headings" width="90px" align="left">Washer 1 </td>
+                       <td class="headings" width="80px" align="left">P2 In</td>
+                        <td class="headings" width="80px" align="left">P2 Out</td>
+                        <td class="headings" width="90px" align="left">Washer 2</td>
+                          <td class="headings" width="90px" align="left">Sole 1</td>
+			 <td class="headings" width="90px" align="left">Sole 2</td>                                            
+			 <td class="headings" width="90px" align="left">Sole 3</td>                      
+			 <td class="headings" width="90px" align="left">Sole 4</td>                      
+			 <td class="headings" width="90px" align="left">Energy</td>                      
+                    </tr>
+                    <?php
+	}
+			echo "<form  method=\"post\" action=\"Delete_Aspire_Data.php\">";
+			while($Fetch_Result = mysqli_fetch_array($Raw_Resultset)){
+	if($Format_Type == 6 ){
+			?>
+			<tr><td align="left" class='Row_Td'><input type="checkbox" name=Record_Index[] id=Record_Index value="<?=$Fetch_Result['Record_Index']?>"/></td><td class='Row_Td'><?=$Fetch_Result['Date_S']?></td><td class='Row_Td'><?=$Fetch_Result['Time_S']?></td><td class='Row_Td'><?=$Fetch_Result['GRPM']?></td><td class='Row_Td'><?=$Fetch_Result['RRPM']?></td><td class='Row_Td'><?=$Fetch_Result['Windspeed']?></td><td class='Row_Td'><?=$Fetch_Result['Pitch']?></td><td class='Row_Td'><?=$Fetch_Result['Status_Old']?></td><td class='Row_Td'><?=$Fetch_Result['Date']?></td><td class='Row_Td'><?=$Fetch_Result['Time']?></td><td class='Row_Td'><?=$Fetch_Result['Power']?></td><td class='Row_Td'><?=$Fetch_Result['Trip_Line_Ok']?></td><td class='Row_Td'><?=$Fetch_Result['Trip_Turbine_Ok']?></td><td class='Row_Td'><?=$Fetch_Result['Trip_Run']?></td><td class='Row_Td'><?=$Fetch_Result['Trip_Gen1']?></td><td class='Row_Td'><?=$Fetch_Result['Nacel_Temp']?></td><td class='Row_Td'><?=$Fetch_Result['Gear_Temp']?></td>
+<td class='Row_Td'><?=$Fetch_Result['Gen1_Temp']?></td><td class='Row_Td'><?=$Fetch_Result['Control_Temp']?></td><td><input type=hidden  name=Format_Type id=Format_Type value="<?=$Format_Type?>"></td><td><input type=hidden  name=db_name id=db_name value="<?=$db_name?>"></td><td><input type=hidden id=Date  name=Date value="<?=$Date?>"></td></tr>
+			<?php
+	} if($Format_Type == 4 ){
+	?>
+	<tr><td align="left" class='Row_Td'><input type="checkbox" name=Record_Index[] id=Record_Index value="<?=$Fetch_Result['Record_Index']?>"/></td><td class='Row_Td'><?=$Fetch_Result['Date_S']?></td><td class='Row_Td'><?=$Fetch_Result['Time_S']?></td><td class='Row_Td'><?=$Fetch_Result['RRPM']?></td><td class='Row_Td'><?=$Fetch_Result['Gen_Bear1_Temp']?></td><td class='Row_Td'><?=$Fetch_Result['Power']?></td><td class='Row_Td'><?=$Fetch_Result['Windspeed']?></td><td class='Row_Td'><?=$Fetch_Result['GRPM']?></td><td class='Row_Td'><?=$Fetch_Result['Gen1_Temp']?></td><td class='Row_Td'><?=$Fetch_Result['Nacel_Temp']?></td><td class='Row_Td'><?=$Fetch_Result['Gen2_Temp']?></td><td class='Row_Td'><?=$Fetch_Result['YPhase_Volt']?></td><td class='Row_Td'><?=$Fetch_Result['BPhase_Volt']?></td><td class='Row_Td'><?=$Fetch_Result['RPhase_Current']?></td><td class='Row_Td'><?=$Fetch_Result['YPhase_Current']?></td><td class='Row_Td'><?=$Fetch_Result['Twist_Pulse']?></td><td><input type=hidden  name=Format_Type id=Format_Type value="<?=$Format_Type?>"></td><td><input type=hidden  name=db_name id=db_name value="<?=$db_name?>"></td><td><input type=hidden id=Date  name=Date value="<?=$Date?>"></td></tr>		
+<?php
+}
+ 
+}
+?>
+			<input type="submit"  value="DELETE RAW DATA" name=Submit>
+			</form>
+			<?php
+			}else
+			echo "Records Not found";	
+			exit;
+			?>
+			</table>	
+					
+					
+		<?php		
+		}
+	}
+?>
+
+	
+<?php 
+
+echo "<form action=\"\" method=\"post\" name=\"".$Title_Head."\" onsubmit=\"return FormValid('$Jvalid_Arr_Join','$Jvalid_Type_Arr_Join')\" enctype=\"multipart/form-data\" >";
+		
+				echo '<div id="admin_left" style="width:990px; border:solid 0px red;">
+							<p class="headings" style="padding-left:10px;">'.$Title_Head.'</p>
+							<p>&nbsp;</p>';
+
+				foreach($Form_Fields as $Forms){
+				// For select Box
+					if($Forms[0] == 2 && $Forms[1] == 2){
+						 ?>						
+					<div id="admin_left_inner">
+							<div id="admin_fields"><?=($Forms[2] != ''?$Forms[2] : $Forms[3])?><?=($Forms[5] == '*'?$star : '')?></div>
+						<?=Func_Select_Element($Forms[0],$Forms[1],$Forms[3],$Forms[4],$Forms[7],$Forms[8],$Forms[9],$Forms[10]);?>
+						<?=J_Mes($Forms[3]);?>
+					</div>
+
+	               <? }elseif($Forms[1] == 5 || $Forms[1] == 6){
+						// For Submit boxes
+					?>
+                        <table border="0" cellpadding="3" cellspacing="3"><tr><td><div id="admin_left_inner">
+                            <div class="submbg" style="margin-left:220px;"><?=Func_Forms_Element($Forms[0],$Forms[1],$Forms[3],$Forms[4],$Forms[8],$Forms[7]);?><div class="submbg1"></div><div style="clear:both"></div></div></td></tr></table>
+                        
+						                        
+	               <? }else{
+						// For Text boxes
+					?>
+					<div id="admin_left_inner">
+		                    <?
+                    		if($Forms[1] != 7){ // Hidden Field Checking
+							?>
+							<div id="admin_fields"><?=($Forms[2] != ''?$Forms[2] : $Forms[3])?><?=($Forms[5] == '*'?$star : '')?></div>
+                            <?
+							}
+							?>
+                            
+							<?
+								// For Calendar Enabled Field
+                            if($Forms[9] == 'Cal'){
+    	                    ?>
+                             <script language="JavaScript" src="js/calendar_us.js"></script>
+                            <link rel="stylesheet" href="css/calendar.css">
+                            <?=Func_Forms_Element($Forms[0],$Forms[1],$Forms[3],$Get_Record[$Forms[3]],$Forms[8],$Forms[7]);?>
+								<script language="JavaScript">
+                                new tcal ({
+                                    // form name
+                                    'formname': '<?=$Title_Head?>',
+                                    // input name
+                                    'controlname': '<?=$Forms[3]?>'
+                                });
+                                </script><span class="date_format">( Format : mm/dd/yyyy )</span>
+                            <br /><br />
+                           <?
+                            }
+								// For Calendar Enabled Field
+                            elseif($Forms[9] == 'Cal_T'){
+    	                    ?>
+                            <script language="JavaScript" src="js/dcal.js"></script>
+                            <link rel="stylesheet" href="css/dcal.css">
+                            <?=Func_Forms_Element($Forms[0],$Forms[1],$Forms[3],$Forms[4],$Forms[8],$Forms[7]);?>
+							<input type="button"  class="cal_st" onClick="displayCalendar(document.forms[0].<?=$Forms[3]?>,'dd-mm-yyyy hh:ii',this,true)">                             
+							<span class="date_format">( Format : dd-mm-yyyy hh:mm )</span>
+                            <br /><br />
+                           <?
+                            }
+                            else{
+									// For Radio Button
+									if($Forms[1] == 3){
+										$Radio_Fileds = explode('|',$Forms[4]);
+										$Ra = 0;
+										foreach($Radio_Fileds as $Radio_Name){
+										
+										?>
+											<?=Func_Forms_Element($Forms[0],$Forms[1],$Forms[3],$Radio_Name,$Forms[8],$Forms[7]);?><?=$Radio_Name?>
+                                        <?    
+										}
+                                            echo "<br /><br />";
+									}
+									// For Checkbox
+									elseif($Forms[1] == 4){
+										?>
+											<?=Func_Forms_Element($Forms[0],$Forms[1],$Forms[3],$Forms[4],$Forms[8],$Forms[7]);?> <?=$Forms[4]?>
+                                        <?    
+									}
+									else{	
+                            			// For normal form fields 
+                            ?>
+                                       
+										<?=Func_Forms_Element($Forms[0],$Forms[1],$Forms[3],$Forms[4],$Forms[8],$Forms[7]);?>
+                                        <?=J_Mes($Forms[3]);?>
+                                
+                            			<? 
+											if($Forms[3] == 'H11') 
+												echo '<br /><p class="headings" style="margin-left:-30px;">Transformer Details</p><br />';
+											if($Forms[3] == 'H17') 
+												echo '<br /><p class="headings" style="margin-left:-30px;">Generator Details</p><br />';
+											if($Forms[3] == 'H21') 
+												echo '<br /><p class="headings" style="margin-left:-30px;">Gear box Details</p><br />';
+											if($Forms[3] == 'H25') 
+												echo '<br /><p class="headings" style="margin-left:-30px;">Other Details</p><br />';
+										?>
+                                	<?
+									}
+									?>
+									
+                            <?
+                            }
+                            ?>
+					</div>
+                    
+	               <? } ?>
+                    
+               <? } ?> 
+						
+
+				</div></div><br />
+		</form>
+	  </div> 
+				 <div style="clear:both"></div>
+</div>	  
+					<p>&nbsp;</p>
+				
+
+<?php include_once("Footer.php"); ?>
+
