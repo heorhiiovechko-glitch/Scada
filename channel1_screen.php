@@ -116,7 +116,7 @@ function secondPassed() {
     document.getElementById('countdown').innerHTML = minutes + "&nbsp;" + ":" + "&nbsp;"+ remainingSeconds;
        
         if (seconds == 0) {
-$('#getdata').load('channel1.php #getdata');
+$('#getdata').load('dashboard.php #getdata');
  seconds = 60;
     }
 else {

@@ -142,9 +142,9 @@
 		$Select_Query = "select * from va_master.user_master where Account_ID='".$_REQUEST['P_ID']."' and Parent_ID='".$_REQUEST['P_ID1']."'";
 		//echo $Select_Query;
 		$Select_Result = mysqli_query($db,$Select_Query);
-		$Select_Count = mysqli_num_rows($Select_Result);		
-				$Get_Record = mysqli_fetch_array($Select_Result);
-		$utid=$Get_Record['User_Type_ID'];
+		$Select_Count = $Select_Result ? mysqli_num_rows($Select_Result) : 0;
+		$Get_Record = ($Select_Count > 0) ? mysqli_fetch_array($Select_Result) : null;
+		$utid = $Get_Record ? $Get_Record['User_Type_ID'] : $Cook_Variable[2];
 		//echo $utid;
 	// Javascript Validation	
 	foreach($Form_Fields as $Forms){

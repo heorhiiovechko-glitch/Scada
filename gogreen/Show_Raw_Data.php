@@ -43,6 +43,9 @@ $Date = date("Y-m-d");
 				}elseif($Format_Type == 10){
 					$Table_Name = "device_data_f10"; 
 					$Query_Date="Date_S='$Date'";	
+				}elseif($Format_Type == 11){
+					$Table_Name = "device_data_f11";
+					$Query_Date="Date_S='$Date'";
 				}
 ?>
 
@@ -61,8 +64,11 @@ if($Format_Type == 3){
 if($Format_Type == 10){
 		$Query="select Date_S,max(Production_Total) as PT_Max,min(Production_Total) as PT_Min,IMEI,max(Line_Hours) as Hours_Max,min(Line_Hours) as Hours_Min from $db_name.$Table_Name WHERE IMEI='$IMEI' and   $Query_Date  limit 1";
 }
+if($Format_Type == 11){
+		$Query="select Date_S,max(tag_power) as PT_Max,min(tag_power) as PT_Min,IMEI,max(tag_windspd) as Hours_Max,min(tag_windspd) as Hours_Min from $db_name.$Table_Name WHERE IMEI='$IMEI' and   $Query_Date  limit 1";
+}
 if($Format_Type == 7 || $Format_Type == 8){
-		$Query="select Date_S,max(Production_Total) as PT_Max,min(Production_Total) as PT_Min,IMEI,max(Operate_Hours) as Hours_Max,min(Operate_Hours) as Hours_Min from $db_name.$Table_Name WHERE IMEI='$IMEI' and   $Query_Date  limit 1";
+		$Query="select Date_S,max(Windspeed) as PT_Max,min(Windspeed) as PT_Min,IMEI,max(Power) as Hours_Max,min(Power) as Hours_Min from $db_name.$Table_Name WHERE IMEI='$IMEI' and   $Query_Date  limit 1";
 }
 if($Format_Type == 4){
 		$Query="select Date_S,max(PAT_Gen1) as Gen1_Max,min(PAT_Gen1) as Gen1_Min,max(PAT_Gen2) as Gen2_Max,min(PAT_Gen2) as Gen2_Min,IMEI,max(Gen1_Hours) as Hours_Max,min(Gen1_Hours) as Hours_Min from $db_name.device_data_f4 WHERE IMEI='$IMEI' and   $Query_Date limit 1 ";
@@ -119,6 +125,12 @@ if($Format_Type == 3){
 }
 if($Format_Type == 10){
 		$Mysql_Query="select Record_Index,Date_S,Time_S,Date_F,Time_F,PAT_Gen0,Gen1_Hours,Gen2_Hours,Line_Hours,Run_Hours,Production_Total,IMEI from $db_name.device_data_f10 WHERE IMEI='$IMEI' and   $Query_Date order by Time_S ";
+}
+if($Format_Type == 7 || $Format_Type == 8){
+		$Mysql_Query="select Record_Index,Date_S,Time_S,Date_F,Time_F,Windspeed,Power,Status,IMEI from $db_name.$Table_Name WHERE IMEI='$IMEI' and $Query_Date order by Record_Index desc";
+}
+if($Format_Type == 11){
+		$Mysql_Query="select Record_Index,Date_S,Time_S,tag_windspd,tag_power,tag_status,IMEI from $db_name.$Table_Name WHERE IMEI='$IMEI' and $Query_Date order by Record_Index desc";
 }
 if($Format_Type == 4){
 		$Mysql_Query="select Record_Index,Date_S,Time_S,Date_F,Time_F,Gen1_Hours,Gen2_Hours,Import_Kwh,PAT_Gen1,PAT_Gen2,IMEI from $db_name.device_data_f4 WHERE IMEI='$IMEI' and   $Query_Date  ";
@@ -204,5 +216,8 @@ if($Format_Type == 4){
 					<p>&nbsp;</p>
 				
 
+<?php if (!empty($_REQUEST['live'])) { ?>
+<script>setTimeout(function(){ location.reload(); }, 30000);</script>
+<?php } ?>
 <?php include_once("Footer.php"); ?>
 

@@ -154,7 +154,7 @@ document.onkeydown = function(e) {
         </div>
         <div class="col-md-2 text-end">
             <iframe src="TcpRequest.php?c1=<?= $_REQUEST['c1'] ?>&db=<?= $Database_Name ?>" style="background-color:transparent; border:0; height:80px; width:100%; max-width:480px;"></iframe>
-            <div class="mt-2 text-end"><a href="channel1.php" class="btn btn-sm btn-outline-secondary"><img src="images/back_btn.png" height="24" width="24" alt="Back"></a></div>
+            <div class="mt-2 text-end"><a href="dashboard.php" class="btn btn-sm btn-outline-secondary"><img src="images/back_btn.png" height="24" width="24" alt="Back"></a></div>
         </div>
     </div>
 

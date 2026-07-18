@@ -19,18 +19,21 @@ if(isset($_POST['Submit'])) {
     $Confirm_Password = $_POST['Confirm_Password'];
 
     $Sql = "SELECT * FROM user_master WHERE Username = '$Username'";
-    $Result = mysql_query($Sql);
-    $Rows = mysql_fetch_array($Result);
-
-    $Password = $Rows['Password'];
-
-    if($Current_Password == $Password) {
-
-        mysql_query("UPDATE user_master SET Password ='$New_Password' WHERE Username = '$Username'");
-        $Message = "Password Changed Successfully";
-
+    $Result = $db->query($Sql);
+    if (!$Result || $Result->num_rows === 0) {
+        $Message = "User not found";
     } else {
-        $Message = "Current Password is Incorrect";
+        $Rows = $Result->fetch_array();
+        $Password = $Rows['Password'];
+
+        if ($New_Password !== $Confirm_Password) {
+            $Message = "New Password and Confirm Password do not match";
+        } elseif ($Current_Password == $Password) {
+            $db->query("UPDATE user_master SET Password ='$New_Password' WHERE Username = '$Username'");
+            $Message = "Password Changed Successfully";
+        } else {
+            $Message = "Current Password is Incorrect";
+        }
     }
 }
 ?>
@@ -304,7 +307,7 @@ document.onkeydown = function(e) {
 
 </form>
 
-<a href="channel1.php" class="back-btn">Back</a>
+<a href="dashboard.php" class="back-btn">Back</a>
 
 
 <?php include("footer.php"); ?>

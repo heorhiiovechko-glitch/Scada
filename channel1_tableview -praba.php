@@ -156,7 +156,7 @@ while($d = $res->fetch_array()) {
 	
 	/* ------------------------------
    FETCH DETAILED INFORMATION
-   SAME LOGIC AS CHANNEL1.PHP
+   SAME LOGIC AS dashboard.php
 --------------------------------*/
 
 $IMEI_Enc = base64_encode($d['IMEI']);

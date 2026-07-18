@@ -88,21 +88,25 @@ $Test_Time=date('H',$GD_Time);
 
 
 $Mysql_Query_GAD="select (select (Gen1_Max-Gen1_Min) from device_register where IMEI = '".$IMEI_Decode."' and Date_S=curdate()) as GAD_Today,(select (Gen1_Max-Gen1_Min) from daily_data where IMEI = '".$IMEI_Decode."' and Date_S=(curdate()-interval 1 day) limit 1) as GAD_Yesterday,(select sum((Gen1_Max-Gen1_Min)) from daily_data where IMEI = '".$IMEI_Decode."' and Date_S BETWEEN DATE_ADD(CURDATE(), INTERVAL 1-DAYOFWEEK(CURDATE()) DAY) AND DATE_ADD(CURDATE(), INTERVAL 7-DAYOFWEEK(CURDATE()) DAY) limit 1) as GAD_Thisweek,(select sum((Gen1_Max-Gen1_Min)) from daily_data where IMEI = '".$IMEI_Decode."' and Date_S BETWEEN DATE_SUB(CURDATE(),INTERVAL (DAY(CURDATE())-1) DAY) AND LAST_DAY(NOW()) limit 1) as GAD_Thismonth,(select sum((Gen1_Max-Gen1_Min)) from daily_data where IMEI = '".$IMEI_Decode."' and WEEK (Date_S) = WEEK(curdate() ) - 1 and Month(Date_S)=month(curdate()) AND YEAR( Date_S) = YEAR( curdate() ) limit 1) as GAD_Previousweek";
-//echo $Mysql_Query_GAD;
-if (!$Mysql_Query_Result_GAD = $db->query($Mysql_Query_GAD))
-            {
-                die($db->error);
+$GAD_Today = 0;
+$GAD_Yesterday = 0;
+$GAD_Thisweek = 0;
+$GAD_Thismonth = 0;
+$GAD_Previousweek = 0;
+try {
+    if ($Mysql_Query_Result_GAD = $db->query($Mysql_Query_GAD)) {
+        if ($Mysql_Query_Result_GAD->num_rows >= 1) {
+            while ($Fetch_Result_GAD = $Mysql_Query_Result_GAD->fetch_array()) {
+                $GAD_Today = round($Fetch_Result_GAD['GAD_Today'], 2);
+                $GAD_Yesterday = round($Fetch_Result_GAD['GAD_Yesterday'], 2);
+                $GAD_Thisweek = round($Fetch_Result_GAD['GAD_Thisweek'], 2);
+                $GAD_Thismonth = round($Fetch_Result_GAD['GAD_Thismonth'], 2);
+                $GAD_Previousweek = round($Fetch_Result_GAD['GAD_Previousweek'], 2);
             }
-
-            if($Mysql_Query_Result_GAD->num_rows >= 1)
-            {
-                while($Fetch_Result_GAD = $Mysql_Query_Result_GAD->fetch_array()) {
-			$GAD_Today = round($Fetch_Result_GAD['GAD_Today'],2);
-			$GAD_Yesterday = round($Fetch_Result_GAD['GAD_Yesterday'],2);
-			$GAD_Thisweek = round($Fetch_Result_GAD['GAD_Thisweek'],2);
-			$GAD_Thismonth = round($Fetch_Result_GAD['GAD_Thismonth'],2);
-			$GAD_Previousweek = round($Fetch_Result_GAD['GAD_Previousweek'],2);				
-			}
+        }
+    }
+} catch (mysqli_sql_exception $e) {
+    // daily_data may not exist in this customer database
 }
 	//echo $GAD_Thisweek;
 
@@ -542,9 +546,102 @@ window.addEventListener('orientationchange', updateRotateWarning);
             Remote
         </button>
 
+        <button type="button" id="btnTcpStart" class="tcp-inline-btn tcp-inline-btn--start"
+                onclick="sendTCPCommand('START', this)"
+                title="Post $CFG&lt;Start&gt; to TCP client">
+            Start ($CFG&lt;Start&gt;)
+        </button>
+
+        <button type="button" id="btnTcpStop" class="tcp-inline-btn tcp-inline-btn--stop"
+                onclick="sendTCPCommand('STOP', this)"
+                title="Post $CFG&lt;Pause&gt; to TCP client">
+            Stop ($CFG&lt;Pause&gt;)
+        </button>
+
+        <span id="tcpCommandFeedback" class="tcp-inline-feedback" aria-live="polite"></span>
+
     </div>
 
 </div>
+
+<style>
+.tcp-inline-btn{
+    font-size:15px;
+    font-weight:600;
+    padding:7px 16px;
+    border:none;
+    border-radius:3px;
+    color:#fff;
+    cursor:pointer;
+}
+.tcp-inline-btn:disabled{ opacity:0.55; cursor:not-allowed; }
+.tcp-inline-btn--start{ background:#16a34a; }
+.tcp-inline-btn--stop{ background:#dc2626; }
+.tcp-inline-feedback{
+    display:inline-block;
+    font-size:13px;
+    font-weight:600;
+    margin-left:6px;
+}
+.tcp-inline-feedback.ok{ color:#166534; }
+.tcp-inline-feedback.error{ color:#991b1b; }
+</style>
+
+<script>
+function setTCPCommandFeedback(message, status) {
+    var feedback = document.getElementById('tcpCommandFeedback');
+    if (!feedback) {
+        return;
+    }
+    feedback.className = 'tcp-inline-feedback' + (status ? (' ' + status) : '');
+    feedback.textContent = message || '';
+}
+
+function sendTCPCommand(command, button) {
+    if (!command) {
+        return false;
+    }
+
+    setTCPCommandFeedback('Posting TCP command...', '');
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    var request = new XMLHttpRequest();
+    var body =
+        'c1=<?= urlencode($_REQUEST['c1']) ?>' +
+        '&db=<?= urlencode($Database_Name) ?>' +
+        '&ajax=1&cmd=' + encodeURIComponent(command);
+
+    request.open('POST', 'TcpRequest.php', true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onreadystatechange = function() {
+        if (request.readyState !== 4) {
+            return;
+        }
+        if (button) {
+            button.disabled = false;
+        }
+        try {
+            var response = JSON.parse(request.responseText);
+            if (request.status >= 200 && request.status < 300 && response.ok) {
+                var msg = response.message;
+                if (response.cfg_payload) {
+                    msg = response.cfg_payload + ' queued for TCP client.';
+                }
+                setTCPCommandFeedback(msg || (command + ' command submitted.'), 'ok');
+            } else {
+                setTCPCommandFeedback(response.message || (command + ' command failed.'), 'error');
+            }
+        } catch (error) {
+            setTCPCommandFeedback(command + ' command failed.', 'error');
+        }
+    };
+    request.send(body);
+    return false;
+}
+</script>
 
 		
 		<!-- TOP TCP REQUEST FRAME -->

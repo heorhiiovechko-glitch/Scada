@@ -32,10 +32,35 @@ if (!function_exists('tcp_command_state')) {
             return '1';
         }
         if ($command == 'RESET') {
+            return '4';
+        }
+        if ($command == 'QUICK') {
             return '2';
         }
         if ($command == 'PAUSE') {
             return '3';
+        }
+        return null;
+    }
+}
+
+if (!function_exists('tcp_command_payload')) {
+    function tcp_command_payload($command) {
+        $command = strtoupper(trim((string)$command));
+        if ($command == 'START') {
+            return '$CFG<Start>';
+        }
+        if ($command == 'STOP' || $command == 'EMERG') {
+            return '$CFG<Pause>';
+        }
+        if ($command == 'RESET') {
+            return '$CFG<Reset>';
+        }
+        if ($command == 'QUICK') {
+            return '$CFG<Quick>';
+        }
+        if ($command == 'PAUSE') {
+            return '$CFG<Brake>';
         }
         return null;
     }
@@ -62,6 +87,9 @@ if (!function_exists('tcp_command_from_request')) {
             return strtoupper(trim($_POST['button2'])) == 'EMERG' ? 'EMERG' : 'STOP';
         }
         if (isset($_POST['button3'])) {
+            return 'QUICK';
+        }
+        if (isset($_POST['button5'])) {
             return 'RESET';
         }
         if (isset($_POST['button4'])) {
@@ -129,7 +157,12 @@ if (!function_exists('tcp_write_command')) {
             return array(false, $db->error);
         }
 
-        return array(true, strtoupper($command).' command submitted at '.$currentdate);
+        $payload = tcp_command_payload($command);
+        $message = $payload !== null
+            ? ($payload.' queued for TCP client at '.$currentdate.' (sent on next device packet)')
+            : (strtoupper($command).' command submitted at '.$currentdate);
+
+        return array(true, $message, $payload);
     }
 }
 
@@ -223,6 +256,7 @@ if ($Requested_Command != '') {
     if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == '1') {
         tcp_send_json($Command_Result[0], $Command_Result[1], array(
             'command' => strtoupper($Requested_Command),
+            'cfg_payload' => tcp_command_payload($Requested_Command),
             'imei' => $IMEI_Decode,
             'all' => tcp_is_all_request(),
             'count' => $All_Command_Count
@@ -297,7 +331,8 @@ body {
         <input type="submit" name="button1" class="button button-start" value="Start" />
         <input type="submit" name="button2" class="button button-stop" value="Stop" />
         <input type="submit" name="button4" class="button button-pause" value="Pause" />
-        <input type="submit" name="button3" class="button button-reset" value="Reset" />
+        <input type="submit" name="button3" class="button button-reset" value="Quick" />
+        <input type="submit" name="button5" class="button button-reset" value="Reset" />
         <input type="submit" name="button2" class="button button-stop" value="Emerg" />
         <input type="submit" name="all_button1" class="button button-start" value="Start All" />
         <input type="submit" name="all_button2" class="button button-stop" value="Stop All" />

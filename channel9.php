@@ -88,7 +88,7 @@
           <h2>Energy from <?= $Firstname." ".$Lastname?> Detailed Information!</h2>
           <p>about Status, Temperatures, Electrical, Production Figures</p>
       </td>
-     <td  width="50%" align="right"><a href="channel1.php"><img src="images/back_btn.png" height="40px" width="40px" /></a></td>
+     <td  width="50%" align="right"><a href="dashboard.php"><img src="images/back_btn.png" height="40px" width="40px" /></a></td>
       </table> 
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
     		<tr>

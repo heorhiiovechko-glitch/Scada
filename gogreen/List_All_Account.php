@@ -103,8 +103,8 @@
 	$List_Fields[] = array('Password','Password','','','');
 	$List_Fields[] = array('User Type','User_Type_ID','','',$User_Type_Array);
 	$List_Fields[] = array('E-Mail','E_Mail','','','');
-	$List_Fields[] = array('Admin Access','GPSAdmin','','','');
-	$List_Fields[] = array('Parent Account','SubAdmin','','',$Firstname_ByID_Array);
+	$List_Fields[] = array('Admin Access','AdminAccess','','','');
+	$List_Fields[] = array('Parent Account','Parent_ID','','',$Firstname_ByID_Array);
 	$List_Fields[] = array('Date','Date_Stamp','','6','');
 
 	###############################################     End      #########################################
@@ -574,7 +574,7 @@ if($XLS == 0){
 							}				
 							
 							// Admin Access members only they can add User
-							if($Fetch_Result['GPSAdmin'] == 'Enabled'){
+							if($Fetch_Result['AdminAccess'] == 'Enabled'){
 								echo "<td class='Row_Td'><a href='Add_Sub_Account.php?Account_ID=".$Fetch_Result['Account_ID']."'>Add User</a></td>";				
 							}
 							else{

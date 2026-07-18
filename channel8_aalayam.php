@@ -305,7 +305,7 @@ $(document).ready(function(){
 </div>
 
 <div>
-    <a href="channel1.php" class="back-btn" title="Go Back">
+    <a href="dashboard.php" class="back-btn" title="Go Back">
         ← Back
     </a>
 </div>

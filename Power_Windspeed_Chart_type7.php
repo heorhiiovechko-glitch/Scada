@@ -477,7 +477,7 @@ var x=$Each_Hours_GKwh_Arr.length
       </td>
 <?php
 if($Format_Type==1)
-$Filename="channel1.php?c1=".$_REQUEST['c1']."&l=".$_REQUEST['l']."&FType=".$Format_Type;
+$Filename="dashboard.php?c1=".$_REQUEST['c1']."&l=".$_REQUEST['l']."&FType=".$Format_Type;
 elseif($Format_Type==2)
 $Filename="channel3.php?c1=".$_REQUEST['c1']."&l=".$_REQUEST['l']."&FType=".$Format_Type;
 elseif($Format_Type==7 || $Format_Type==8)

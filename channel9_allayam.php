@@ -175,7 +175,7 @@ iframe{
 </div>
 
 <div>
-<a href="channel1.php" style="text-decoration:none;font-weight:600;">← Back</a>
+<a href="dashboard.php" style="text-decoration:none;font-weight:600;">← Back</a>
 </div>
 
 </div>

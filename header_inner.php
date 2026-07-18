@@ -42,7 +42,45 @@
         .header-container {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             width: 100%;
+        }
+
+        .header-left-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-wind-icon {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.12);
+            display: block;
+        }
+
+        .header-brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .header-brand-link:hover .header-wind-icon {
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.55);
+        }
+
+        .header-brand-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.02em;
         }
 
         .header-logo {
@@ -74,6 +112,31 @@
 
         .logout-icon {
             color: #ff6b6b !important;
+        }
+
+        .btn-sign-out {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .btn-sign-out:hover {
+            transform: translateY(-1px);
+            background: rgba(79, 209, 255, 0.22);
+            border-color: rgba(144, 202, 249, 0.55);
+            color: #e3f2fd;
+        }
+
+        .btn-sign-out i {
+            font-size: 17px;
+            line-height: 1;
         }
 		
 		.header-bar {
@@ -113,8 +176,11 @@
     <div class="header-new">
         <div class="header-container">
 
-            <!-- LEFT SIDE (SPACER TO PUSH ITEMS RIGHT) -->
-            <div style="flex:1;"></div>
+            <!-- LEFT SIDE: wind farm brand -->
+            <a href="dashboard.php" class="header-left-brand header-brand-link" title="Dashboard">
+                <img src="images/wind1.jpg" alt="" class="header-wind-icon">
+                <span class="header-brand-title">SCADA</span>
+            </a>
 
             <!-- RIGHT SIDE -->
             <div class="header-right">
@@ -136,20 +202,6 @@
                 <span style="font-size:15px; font-weight:500;">
                     Welcome <?= htmlspecialchars($Username) ?> !
                 </span>
-				
-				<!-- NEW ICON FOR TABLE VIEW -->
-				<img src="images/listview.png" 
-				onclick="location.href='channel1_tableview.php';" 					 
-					 style="width:30px; height:30px; cursor:pointer;" 
-					 title="List View">
-					 
-				<img src="images/gridview.png"
-				 onclick="location.href='channel1.php';" 
-				 style="width:30px; height:30px; cursor:pointer; margin-left:10px;"
-				 title="Grid View">
-				 
-				
-
 
                 <!-- Change Password Icon -->
                 <?php if ($Username != 'krishnan') { ?>
@@ -158,9 +210,9 @@
                 </a>
                 <?php } ?>
 
-                <!-- Logout Icon -->
-                <a href="logout.php" title="Logout">
-                    <i class="fa-solid fa-power-off header-icon logout-icon"></i>
+                <!-- Sign Out (icon only) -->
+                <a href="logout.php" title="Sign Out" class="btn-sign-out" aria-label="Sign Out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
 
                 <?php } ?>

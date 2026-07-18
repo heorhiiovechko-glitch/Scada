@@ -21,7 +21,7 @@
 				case 'nextgenscada': header("Location: channel1_all.php"); break;	
 				case 'power2mw': header("Location: channel1_shanmugam.php"); break;					
 		        case 'suspend':header("Location: account_suspend.php"); break;							
-				default: header("Location: channel1.php"); break;
+				default: header("Location: dashboard.php"); break;
 			}
 			exit;
 		} else {

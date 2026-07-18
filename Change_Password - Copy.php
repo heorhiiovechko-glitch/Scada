@@ -188,7 +188,7 @@ font-weight: bold;
 
 </table>
 <?php } ?>
-<a href="channel1.php">Back</a>
+<a href="dashboard.php">Back</a>
 </form>
 <br>
 <span class="style12"> <?php if(isset($Message)) { echo $Message; }  ?> </span>

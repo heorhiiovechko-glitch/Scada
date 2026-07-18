@@ -703,7 +703,7 @@ function openTab(tabName)
             <span class="cmd-label">Energy Report</span>
         </button>
 
-        <button type="button" class="command-btn command-btn--back" onclick="window.location.href='channel1.php'" title="Back to Channel 1" aria-label="Back to Channel 1">
+        <button type="button" class="command-btn command-btn--back" onclick="window.location.href='dashboard.php'" title="Back to Channel 1" aria-label="Back to Channel 1">
             <span class="cmd-icon cmd-icon--back" aria-hidden="true"></span>
             <span class="cmd-label">Back</span>
         </button>

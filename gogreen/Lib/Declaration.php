@@ -8,12 +8,13 @@
 #######################################################
 
 
+	$Public_Base_Url = "http://103.38.50.83:8080";
 	//$Administration_Home="http://110.234.152.165/Fasttrack";
-	$Administration_Home="http://localhost/biz/FAdmin";
-	$Cook_Name = "WindMillCook";
+	$Administration_Home = $Public_Base_Url . "/gogreen/Home.php";
+	$Cook_Name = "WindUser";
 	$Title = "WindMill - Administration";
 	$Site_Heading = "Welcome to Versatile SCADA Administration";
-	$Footer_Link = "http://localhost";
+	$Footer_Link = $Public_Base_Url;
 	$Website_Name = "WindMill";
 	$Tmp_Upload = "Tmp_Upload";
 	$Img_Big_Prefix = "big_";
@@ -25,9 +26,9 @@
 	$WTWMD_Logs_File_Path = "C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\versatilescada.com\gogreen\Logs\WTWMD_Logs";
 	$WTSYS_Logs_File_Path = "C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\versatilescada.com\gogreen\Logs\WTSYS_Logs";
 
-	$Serial_Logs_File_Path_Link = "http://166.62.35.48:8080/versatilescada.com/gogreen/Logs/Serial_Logs";
-	$WTWMD_Logs_File_Path_Link = "http://166.62.35.48:8080/versatilescada.com/gogreen/Logs/WTWMD_Logs";
-	$WTSYS_Logs_File_Path_Link = "http://166.62.35.48:8080/versatilescada.com/gogreen/Logs/WTSYS_Logs";
+	$Serial_Logs_File_Path_Link = $Public_Base_Url . "/gogreen/Logs/Serial_Logs";
+	$WTWMD_Logs_File_Path_Link = $Public_Base_Url . "/gogreen/Logs/WTWMD_Logs";
+	$WTSYS_Logs_File_Path_Link = $Public_Base_Url . "/gogreen/Logs/WTSYS_Logs";
 	
 
 

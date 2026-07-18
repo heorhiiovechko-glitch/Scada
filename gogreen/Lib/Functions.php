@@ -3,28 +3,28 @@
 include_once('Arrays.php');
 
 function GetUnixTimestamp($Date, $Time){
-  $day   = substr($Date,0,2);
-  $month = substr($Date,3,2);
-  $year  = substr($Date,6,4);
+  $day   = substr((string)$Date, 0, 2);
+  $month = substr((string)$Date, 3, 2);
+  $year  = substr((string)$Date, 6, 4);
 
-  $hour  = substr($Time,0,2);
-  $mins  = substr($Time,3,2);
-  $secs  = substr($Time,6,2);
+  $hour  = substr((string)$Time, 0, 2);
+  $mins  = substr((string)$Time, 3, 2);
+  $secs  = substr((string)$Time, 6, 2);
 
-  $timestamp = gmmktime($hour,$mins,$secs,$month,$day,$year);
+  $timestamp = gmmktime((int)$hour, (int)$mins, (int)$secs, (int)$month, (int)$day, (int)$year);
   return $timestamp;
 }
 
 function GetTimestamp($Date, $Time){
-  $day   = substr($Date,8,2);
-  $month = substr($Date,5,2);
-  $year  = substr($Date,0,4);
+  $day   = substr((string)$Date, 8, 2);
+  $month = substr((string)$Date, 5, 2);
+  $year  = substr((string)$Date, 0, 4);
 
-  $hour  = substr($Time,0,2);
-  $mins  = substr($Time,3,2);
-  $secs  = substr($Time,6,2);
+  $hour  = substr((string)$Time, 0, 2);
+  $mins  = substr((string)$Time, 3, 2);
+  $secs  = substr((string)$Time, 6, 2);
 
-  $timestamp = gmmktime($hour,$mins,$secs,$month,$day,$year);
+  $timestamp = gmmktime((int)$hour, (int)$mins, (int)$secs, (int)$month, (int)$day, (int)$year);
   return $timestamp;
 }
 
@@ -262,7 +262,7 @@ function Random_String_Func($Len){
 		$activatecode='';
 		mt_srand((double)microtime()*1000000);
 		while (strlen($activatecode)<$len+1)
-		$activatecode.=$base{mt_rand(0,$max)};
+		$activatecode.=$base[mt_rand(0,$max)];
 		$pass_str = substr($activatecode,0,$Len);
 		return $pass_str;
 }		

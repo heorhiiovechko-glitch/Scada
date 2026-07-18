@@ -1,5 +1,5 @@
 <?php
-// new_responsive_material_channel1.php
+// new_responsive_material_dashboard.php
 // Full responsive Material UI rewrite (Option A)
 // NOTE: Backend logic preserved from original file; UI replaced with responsive grid/cards
 

@@ -108,6 +108,7 @@
 		//$Form_Fields[] = array('1','1','Filter','search','','','E|N|0','','Filter_box','','');
 		//Submit Button - Dont Touch
 		//$Form_Fields[] = array('1','5','',$Submit_Txt,'Search','','','','submit_but','','');
+		$Form_Fields = array();
 	
 		switch($Cook_Variable[2]){
 			case 1:
@@ -194,8 +195,8 @@
 	
 	
 	// After submit
-	$Submit_Pos =count($Form_Fields) - 1;
-	if( (isset($_REQUEST[$Form_Fields[$Submit_Pos][3]])) || (isset($_REQUEST['SearchD'])) ){
+	$Submit_Pos = count($Form_Fields) - 1;
+	if( $Submit_Pos >= 0 && ( (isset($_REQUEST[$Form_Fields[$Submit_Pos][3]])) || (isset($_REQUEST['SearchD'])) ) ){
 		$v =  0;
 		$Record_Count == 0;
 		foreach($Search_Fields as $Search){
@@ -571,7 +572,7 @@ $Db_Name_Column = $Db_Column.",";
 					if($Query_To_Mysql_Search)
 						$Select_Mysql = $Query_To_Mysql_Search;
 					else	
-						$Select_Mysql = "SELECT Device_Index,IMEI,Device_Name,Format_Type,Account_ID,Parent_ID,db_name,Closing_Time FROM $Table_Name where db_name in ('va_batliboi','va_dmr','va_jayakrishna','va_ssm','va_vishnukumar','va_vinayaka','va_reinfra','va_rsm','va_dhanalakshmi','va_osgreen','va_balajispinning') order by db_name";
+						$Select_Mysql = "SELECT Device_Index,IMEI,Device_Name,Format_Type,Account_ID,Parent_ID,db_name,Closing_Time FROM $Table_Name order by db_name, Device_Name";
 //echo $Select_Mysql;
 					$Total_Records = mysqli_num_rows (mysqli_query($db,$Select_Mysql));
 					$Pager = new PS_Pagination($db, $Select_Mysql, $Records_Per_Page, $Pagination_No_Count, "");

@@ -82,15 +82,25 @@ if($Closing_Time[1]=='06:00:00' || $Closing_Time[1]=='06:30:00'){
 }
 
 $Mysql_Query_GAD = "select (select (Gen1_Max-Gen1_Min) from device_register where IMEI = '".$IMEI_Decode."' and db_name = '".$Database_Name."' and Date_S=curdate()) as GAD_Today,(select (Gen1_Max-Gen1_Min) from daily_data where IMEI = '".$IMEI_Decode."' and db_name = '".$Database_Name."' and Date_S=(curdate()-interval 1 day) limit 1) as GAD_Yesterday,(select sum((Gen1_Max-Gen1_Min)) from daily_data where IMEI = '".$IMEI_Decode."' and db_name = '".$Database_Name."'  and Date_S BETWEEN DATE_ADD(CURDATE(), INTERVAL 1-DAYOFWEEK(CURDATE()) DAY) AND DATE_ADD(CURDATE(), INTERVAL 7-DAYOFWEEK(CURDATE()) DAY) limit 1) as GAD_Thisweek,(select sum((Gen1_Max-Gen1_Min)) from daily_data where IMEI = '".$IMEI_Decode."' and db_name = '".$Database_Name."' and Date_S BETWEEN DATE_SUB(CURDATE(),INTERVAL (DAY(CURDATE())-1) DAY) AND LAST_DAY(NOW()) limit 1) as GAD_Thismonth,(select sum((Gen1_Max-Gen1_Min)) from daily_data where IMEI = '".$IMEI_Decode."' and db_name = '".$Database_Name."' and WEEK (Date_S) = WEEK(curdate() ) - 1 and Month(Date_S)=month(curdate()) AND YEAR( Date_S) = YEAR( curdate() ) limit 1) as GAD_Previousweek";
-if (!$Mysql_Query_Result_GAD = $db->query($Mysql_Query_GAD)) { die($db->error); }
-if($Mysql_Query_Result_GAD->num_rows >= 1) {
-    while($Fetch_Result_GAD = $Mysql_Query_Result_GAD->fetch_array()) {
-        $GAD_Today = $Fetch_Result_GAD['GAD_Today'];
-        $GAD_Yesterday = $Fetch_Result_GAD['GAD_Yesterday'];
-        $GAD_Thisweek = $Fetch_Result_GAD['GAD_Thisweek'];
-        $GAD_Thismonth = $Fetch_Result_GAD['GAD_Thismonth'];
-        $GAD_Previousweek = $Fetch_Result_GAD['GAD_Previousweek'];
+$GAD_Today = 0;
+$GAD_Yesterday = 0;
+$GAD_Thisweek = 0;
+$GAD_Thismonth = 0;
+$GAD_Previousweek = 0;
+try {
+    if ($Mysql_Query_Result_GAD = $db->query($Mysql_Query_GAD)) {
+        if ($Mysql_Query_Result_GAD->num_rows >= 1) {
+            while ($Fetch_Result_GAD = $Mysql_Query_Result_GAD->fetch_array()) {
+                $GAD_Today = $Fetch_Result_GAD['GAD_Today'];
+                $GAD_Yesterday = $Fetch_Result_GAD['GAD_Yesterday'];
+                $GAD_Thisweek = $Fetch_Result_GAD['GAD_Thisweek'];
+                $GAD_Thismonth = $Fetch_Result_GAD['GAD_Thismonth'];
+                $GAD_Previousweek = $Fetch_Result_GAD['GAD_Previousweek'];
+            }
+        }
     }
+} catch (mysqli_sql_exception $e) {
+    // daily_data may not exist in this customer database
 }
 
 $ER_Mysql_Query = "select Status as Log,Date_S,Time_S from $Database_Name.device_data_f6 where IMEI='".$IMEI_Decode."' and Status !='' order by Record_Index desc limit 1";

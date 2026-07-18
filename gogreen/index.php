@@ -190,18 +190,21 @@ if (isset($_REQUEST['Login_Submit']) || ($_REQUEST['dologin'] == 'Login')) {
             $Random."|".
             $Login_Result['User_Type_ID']."|".
             $Login_Result['Account_ID']."|".
+            $Login_Result['Firstname']."|".
+            $Login_Result['Lastname']."|".
+            $Login_Result['Parent_ID']."|".
             $Login_Result['Db_Name']."|".
-            $Login_Result['Parent_ID'];
+            $Login_Result['Password'];
 
         setcookie($Cook_Name, $Cook_Variable, time()+86400);
 
-        // ✅ Redirect ONLY for nextgenscada
-        if ($Login_Result['Username'] === 'nextgenscada') {
+        if ($Login_Result['Username'] === 'nextgenscada' || $Login_Result['User_Type_ID'] == 1) {
             header("Location: Home.php");
             exit;
         }
 
-        // All other users remain on this page
+        header("Location: Home.php");
+        exit;
 
     } else {
         $war_msg = error_report("Oops! Username or Password wrong");

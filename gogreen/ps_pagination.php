@@ -20,12 +20,14 @@ error_reporting(0);
  */
 
 // ------------------------------------------------------------------------
-$filen = explode('?',basename($url));
-	$arg = explode('&',$_SERVER['QUERY_STRING']);
+$final_url = array();
+$url = isset($url) ? $url : (isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '');
+$filen = explode('?', basename($url));
+	$arg = explode('&', isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '');
 
 	foreach($arg as $key => $arg_val){
 		global $final_url;
-		if(!preg_match('/Page/i',$arg_val)){
+		if($arg_val !== '' && !preg_match('/Page/i',$arg_val)){
 			$final_url[] = $arg_val."&";
 		}
 	}

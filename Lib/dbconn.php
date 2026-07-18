@@ -4,8 +4,8 @@
 	$DATABASE_SERVER="localhost";
 	$DATABASE_PORT="3306";
 	$MASTER_DATABASE_NAME="va_master";
-	$DATABASE_USERNAME="root";
-	$DATABASE_PASSWORD="pvipl#2026!";	
+	$DATABASE_USERNAME="chennai_scada_app";
+	$DATABASE_PASSWORD="ChennaiSCADA_App_2026";	
 	/*$db = mysql_connect("$DATABASE_SERVER:$DATABASE_PORT", "$DATABASE_USERNAME","$DATABASE_PASSWORD");
 	//$db_victory = mysql_connect("$DATABASE_SERVER:$DATABASE_PORT", "$DATABASE_USERNAME","$DATABASE_PASSWORD",TRUE);
 	mysql_select_db("$MASTER_DATABASE_NAME");*/
@@ -14,5 +14,6 @@
 	if ($db->connect_errno) {
 		echo "Failed to connect to MySQL: (" . $db->connect_errno . ") " . $db->connect_error;
 	}
+	$db->query("SET SESSION sql_mode = 'NO_ENGINE_SUBSTITUTION'");
 	
 ?>
